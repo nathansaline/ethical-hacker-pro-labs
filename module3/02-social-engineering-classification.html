@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Social Engineering Classification</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Social Engineering Attack Classification</h1>
+      <div class="subtitle">Module 3</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Scenario <span id="qnum">1</span> of 5</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Scenario</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const scenarios = [
+      {
+        text: "An attacker calls the help desk, claims to be a new employee who is locked out, and persuades the agent to reset a password.",
+        options: [
+          { text: "Vishing / Pretexting", correct: true },
+          { text: "Phishing", correct: false },
+          { text: "Baiting", correct: false },
+          { text: "Tailgating", correct: false }
+        ],
+        feedback: "Correct. This is classic vishing combined with pretexting."
+      },
+      {
+        text: "A USB drive labeled “Executive Salary Review – Q3” is left in the company parking lot.",
+        options: [
+          { text: "Phishing", correct: false },
+          { text: "Baiting", correct: true },
+          { text: "Deepfake attack", correct: false },
+          { text: "Smishing", correct: false }
+        ],
+        feedback: "Correct. Leaving physical media to exploit curiosity is baiting."
+      },
+      {
+        text: "An employee receives a text message saying their package could not be delivered and must click a link to reschedule.",
+        options: [
+          { text: "Vishing", correct: false },
+          { text: "Smishing", correct: true },
+          { text: "Tailgating", correct: false },
+          { text: "Pretexting only", correct: false }
+        ],
+        feedback: "Correct. Social engineering via SMS is called smishing."
+      },
+      {
+        text: "An attacker follows closely behind an employee and walks through a secure door before it closes.",
+        options: [
+          { text: "Tailgating / Piggybacking", correct: true },
+          { text: "Badge cloning", correct: false },
+          { text: "Shoulder surfing", correct: false },
+          { text: "Dumpster diving", correct: false }
+        ],
+        feedback: "Correct. This is the definition of tailgating."
+      },
+      {
+        text: "A video call is received from someone who looks and sounds exactly like the CFO, urgently requesting a wire transfer.",
+        options: [
+          { text: "Traditional phishing", correct: false },
+          { text: "Deepfake-enabled social engineering", correct: true },
+          { text: "Baiting", correct: false },
+          { text: "Physical dumpster diving", correct: false }
+        ],
+        feedback: "Correct. AI-generated audio and video are an emerging high-impact social engineering technique."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const s = scenarios[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / scenarios.length) * 100}%`;
+
+      let html = `<div class="question">${s.text}</div><div class="options">`;
+      s.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const s = scenarios[current];
+      s.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (s.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, s.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        s.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, s.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < scenarios.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / scenarios.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${scenarios.length}</strong> (${percent}%)</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
