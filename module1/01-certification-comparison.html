@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Certification Comparison</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Certification Comparison</h1>
+      <div class="subtitle">Module 1 • Ethical Hacker Pro</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Question <span id="qnum">1</span> of 3</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Question</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Which certification is primarily performance-based and requires candidates to complete real-world tasks inside a simulated environment?",
+        options: [
+          { text: "TestOut Ethical Hacker Pro", correct: true },
+          { text: "EC-Council Certified Ethical Hacker (CEH)", correct: false }
+        ],
+        feedback: "Correct. TestOut Ethical Hacker Pro emphasizes hands-on performance in a simulated environment."
+      },
+      {
+        question: "Which certification currently places stronger emphasis on cloud, IoT, operational technology, and modern attack techniques in its exam objectives?",
+        options: [
+          { text: "TestOut Ethical Hacker Pro", correct: false },
+          { text: "EC-Council Certified Ethical Hacker (CEH)", correct: true }
+        ],
+        feedback: "Correct. The current CEH exam has significantly expanded coverage of cloud, IoT, and contemporary threats."
+      },
+      {
+        question: "Which certification is generally viewed as validating roughly two years of equivalent cybersecurity work experience through practical tasks?",
+        options: [
+          { text: "TestOut Ethical Hacker Pro", correct: true },
+          { text: "EC-Council Certified Ethical Hacker (CEH)", correct: false }
+        ],
+        feedback: "Correct. TestOut Ethical Hacker Pro is designed to demonstrate practical skill equivalent to approximately two years of experience."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const q = questions[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / questions.length) * 100}%`;
+
+      let html = `<div class="question">${q.question}</div><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const q = questions[current];
+      q.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+
+      const btn = document.getElementById(`opt${index}`);
+      if (q.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, q.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        q.options.forEach((opt, i) => {
+          if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct');
+        });
+        showFeedback(false, q.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        finishLab();
+      }
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / questions.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${questions.length}</strong> (${percent}%)</p>
+        <p>Both certifications are valuable. Many professionals eventually pursue both.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
