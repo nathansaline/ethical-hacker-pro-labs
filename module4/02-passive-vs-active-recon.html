@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Passive vs Active Reconnaissance</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Passive vs. Active Reconnaissance</h1>
+      <div class="subtitle">Module 4</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Activity <span id="qnum">1</span> of 6</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Activity</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const activities = [
+      {
+        text: "Searching Google, LinkedIn, and the company website for employee names and email formats.",
+        options: [
+          { text: "Passive Reconnaissance", correct: true },
+          { text: "Active Reconnaissance", correct: false }
+        ],
+        feedback: "Correct. This is classic passive OSINT — no direct interaction with the target’s systems."
+      },
+      {
+        text: "Running an Nmap SYN scan against the target’s public IP range.",
+        options: [
+          { text: "Passive Reconnaissance", correct: false },
+          { text: "Active Reconnaissance", correct: true }
+        ],
+        feedback: "Correct. Port scanning involves direct interaction and can be detected."
+      },
+      {
+        text: "Querying Certificate Transparency logs (crt.sh) for subdomains of the target domain.",
+        options: [
+          { text: "Passive Reconnaissance", correct: true },
+          { text: "Active Reconnaissance", correct: false }
+        ],
+        feedback: "Correct. Certificate Transparency logs are public and require no interaction with the target."
+      },
+      {
+        text: "Sending DNS queries directly to the target’s authoritative name servers for zone information.",
+        options: [
+          { text: "Passive Reconnaissance", correct: false },
+          { text: "Active Reconnaissance", correct: true }
+        ],
+        feedback: "Correct. Direct queries to the target’s infrastructure are active techniques."
+      },
+      {
+        text: "Using Shodan or Censys to search for devices and services associated with the target’s IP ranges or domain.",
+        options: [
+          { text: "Passive Reconnaissance", correct: true },
+          { text: "Active Reconnaissance", correct: false }
+        ],
+        feedback: "Correct. Searching public internet-wide scan databases is considered passive."
+      },
+      {
+        text: "Attempting a zone transfer (AXFR) against the target’s DNS servers.",
+        options: [
+          { text: "Passive Reconnaissance", correct: false },
+          { text: "Active Reconnaissance", correct: true }
+        ],
+        feedback: "Correct. Zone transfer attempts are active and often logged as suspicious."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const a = activities[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / activities.length) * 100}%`;
+
+      let html = `<div class="question">${a.text}<br><br><strong>Is this Passive or Active reconnaissance?</strong></div><div class="options">`;
+      a.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const a = activities[current];
+      a.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (a.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, a.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        a.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, a.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < activities.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / activities.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${activities.length}</strong> (${percent}%)</p>
+        <p>Understanding the difference between passive and active techniques is essential for staying within scope and managing detection risk.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
