@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Physical Security Risk Assessment</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Physical Security Risk Assessment</h1>
+      <div class="subtitle">Module 3</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Situation <span id="qnum">1</span> of 5</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Situation</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const situations = [
+      {
+        text: "Employees frequently hold the door open for anyone walking behind them, even if they do not recognize the person.",
+        question: "What risk does this create and what is the best countermeasure?",
+        options: [
+          { text: "Tailgating risk – Enforce a strict no-tailgating policy and consider anti-tailgating controls", correct: true },
+          { text: "Low risk – Being polite is more important", correct: false },
+          { text: "Only a problem after hours", correct: false },
+          { text: "Solved by installing more cameras", correct: false }
+        ],
+        feedback: "Correct. Tailgating is one of the most common physical security failures. Policy + technology + culture are all required."
+      },
+      {
+        text: "Visitor badges are handed out without requiring a photo ID or logging the visit, and visitors are not escorted.",
+        question: "What is the primary issue?",
+        options: [
+          { text: "Poor visitor management increases the chance of unauthorized access", correct: true },
+          { text: "Visitor badges are unnecessary in modern offices", correct: false },
+          { text: "Only a problem if the visitor is not wearing a suit", correct: false },
+          { text: "Cameras make visitor logs unnecessary", correct: false }
+        ],
+        feedback: "Correct. Proper visitor management (ID check, logging, escorting) is a basic but critical control."
+      },
+      {
+        text: "Sensitive documents are thrown into regular recycling bins without shredding.",
+        question: "Which attack does this enable?",
+        options: [
+          { text: "Dumpster diving", correct: true },
+          { text: "Tailgating", correct: false },
+          { text: "Badge cloning", correct: false },
+          { text: "Vishing", correct: false }
+        ],
+        feedback: "Correct. Unshredded documents are a classic source of sensitive information for attackers."
+      },
+      {
+        text: "The server room door has a proximity badge reader, but the door is often propped open with a box when administrators are working inside.",
+        question: "What is the best recommendation?",
+        options: [
+          { text: "Keep the door closed and latched at all times; use a temporary escort process if needed", correct: true },
+          { text: "Propping the door is acceptable for short periods", correct: false },
+          { text: "Replace the badge reader with a key lock", correct: false },
+          { text: "Add a sign that says “Authorized Personnel Only”", correct: false }
+        ],
+        feedback: "Correct. A propped-open door completely defeats the access control system."
+      },
+      {
+        text: "USB drives and external hard drives are commonly left on desks overnight in an open office area.",
+        question: "What risk does this create?",
+        options: [
+          { text: "Physical theft of data and potential malware introduction via USB drops", correct: true },
+          { text: "No significant risk", correct: false },
+          { text: "Only a risk if the drives are not encrypted", correct: false },
+          { text: "Only a risk during business hours", correct: false }
+        ],
+        feedback: "Correct. Unattended removable media creates both data-loss and malware risks."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const s = situations[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / situations.length) * 100}%`;
+
+      let html = `<div class="question"><strong>Situation:</strong><br>${s.text}<br><br>${s.question}</div><div class="options">`;
+      s.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const s = situations[current];
+      s.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (s.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, s.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        s.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, s.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < situations.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / situations.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${situations.length}</strong> (${percent}%)</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
