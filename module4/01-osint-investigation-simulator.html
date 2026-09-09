@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: OSINT Investigation Simulator</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+  <style>
+    .tool-output {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: ui-monospace, monospace;
+      font-size: 0.88rem;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OSINT Investigation Simulator</h1>
+      <div class="subtitle">Module 4 • Reconnaissance</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Step <span id="qnum">1</span> of 4</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Step</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const steps = [
+      {
+        title: "Target Selection",
+        content: "You have been authorized to perform passive reconnaissance on the fictional company <strong>Northstar Analytics</strong> (northstar-analytics.example).",
+        question: "Which of the following is the best first passive step?",
+        options: [
+          { text: "Run an aggressive Nmap scan against their public IP range", correct: false },
+          { text: "Search the company website, LinkedIn, and public records for employee names, technologies, and email formats", correct: true },
+          { text: "Attempt to log in to their VPN portal", correct: false },
+          { text: "Send phishing emails to gather more information", correct: false }
+        ],
+        feedback: "Correct. Start with purely passive OSINT before any active interaction."
+      },
+      {
+        title: "Certificate Transparency & Subdomains",
+        content: `<div class="tool-output">[simulated crt.sh / Certificate Transparency lookup]
+Found certificates for:
+- www.northstar-analytics.example
+- mail.northstar-analytics.example
+- dev.northstar-analytics.example
+- staging.northstar-analytics.example
+- vpn.northstar-analytics.example</div>`,
+        question: "What useful information did this passive technique provide?",
+        options: [
+          { text: "A list of subdomains that may expand the attack surface", correct: true },
+          { text: "Valid usernames and passwords", correct: false },
+          { text: "Proof that the company has no security", correct: false },
+          { text: "Nothing useful", correct: false }
+        ],
+        feedback: "Correct. Certificate Transparency logs are an excellent passive source of subdomain information."
+      },
+      {
+        title: "Public Technology Footprint",
+        content: `<div class="tool-output">[simulated whatweb / Wappalyzer style results]
+www.northstar-analytics.example
+- Nginx
+- React
+- Google Analytics
+- HubSpot
+
+Job postings mention: AWS, Kubernetes, Okta, CrowdStrike</div>`,
+        question: "Why is this information valuable during reconnaissance?",
+        options: [
+          { text: "It helps identify potential technologies and services that may have known vulnerabilities or misconfigurations", correct: true },
+          { text: "It gives you administrator credentials", correct: false },
+          { text: "It is only useful for marketing research", correct: false },
+          { text: "It should be ignored because it is public", correct: false }
+        ],
+        feedback: "Correct. Understanding the technology stack helps prioritize later testing and identify possible weak points."
+      },
+      {
+        title: "Documentation & Scope",
+        content: "You have gathered a significant amount of public information.",
+        question: "What must you do before moving from passive OSINT to any active reconnaissance?",
+        options: [
+          { text: "Confirm that active techniques are authorized in the Rules of Engagement and document your findings so far", correct: true },
+          { text: "Immediately start port scanning", correct: false },
+          { text: "Delete all notes for operational security", correct: false },
+          { text: "Post the findings on social media", correct: false }
+        ],
+        feedback: "Correct. Always stay within authorized scope and keep good documentation."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const s = steps[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / steps.length) * 100}%`;
+
+      let html = `<div class="question"><strong>${s.title}</strong><br><br>${s.content}<br><br>${s.question}</div><div class="options">`;
+      s.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const s = steps[current];
+      s.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (s.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, s.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        s.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, s.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < steps.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / steps.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${steps.length}</strong> (${percent}%)</p>
+        <p>Good OSINT technique and discipline form the foundation of professional reconnaissance.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
