@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Framework Matching</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Penetration Testing Framework Matching</h1>
+      <div class="subtitle">Module 2 • Ethical Hacker Pro</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Question <span id="qnum">1</span> of 4</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Question</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "You need a structured, end-to-end methodology that covers pre-engagement interactions, intelligence gathering, threat modeling, exploitation, post-exploitation, and reporting. Which framework is the best primary choice?",
+        options: [
+          { text: "OWASP Testing Guide", correct: false },
+          { text: "PTES (Penetration Testing Execution Standard)", correct: true },
+          { text: "MITRE ATT&CK", correct: false },
+          { text: "OSSTMM", correct: false }
+        ],
+        feedback: "Correct. PTES provides a complete, modern life-cycle structure that is widely used for professional penetration tests."
+      },
+      {
+        question: "You are performing a detailed web application assessment and need specific guidance and test cases for injection flaws, authentication issues, and session management. Which resource is most appropriate?",
+        options: [
+          { text: "MITRE ATT&CK", correct: false },
+          { text: "NIST SP 800-115", correct: false },
+          { text: "OWASP Testing Guide", correct: true },
+          { text: "PTES", correct: false }
+        ],
+        feedback: "Correct. The OWASP Testing Guide remains the leading practical resource for web application security testing."
+      },
+      {
+        question: "After completing a penetration test, you must map every technique you used to real-world adversary behavior so the blue team can improve detections. Which knowledge base is designed for this purpose?",
+        options: [
+          { text: "OSSTMM", correct: false },
+          { text: "MITRE ATT&CK", correct: true },
+          { text: "OWASP Top 10", correct: false },
+          { text: "PTES", correct: false }
+        ],
+        feedback: "Correct. MITRE ATT&CK is the standard language for describing adversary tactics, techniques, and procedures (TTPs)."
+      },
+      {
+        question: "Which statement best describes how professional testers typically use these frameworks today?",
+        options: [
+          { text: "They use only one framework for the entire engagement", correct: false },
+          { text: "They combine PTES for overall structure with OWASP and MITRE ATT&CK for depth in specific areas", correct: true },
+          { text: "They only use MITRE ATT&CK because it is the newest", correct: false },
+          { text: "Frameworks are optional if the tester is experienced", correct: false }
+        ],
+        feedback: "Correct. Most professional engagements use PTES (or a similar methodology) as the backbone and layer OWASP and MITRE ATT&CK where they add the most value."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const q = questions[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / questions.length) * 100}%`;
+
+      let html = `<div class="question">${q.question}</div><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const q = questions[current];
+      q.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+
+      const btn = document.getElementById(`opt${index}`);
+      if (q.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, q.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        q.options.forEach((opt, i) => {
+          if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct');
+        });
+        showFeedback(false, q.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        finishLab();
+      }
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / questions.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${questions.length}</strong> (${percent}%)</p>
+        <p>Understanding when to apply each framework is a key professional skill.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
