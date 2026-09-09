@@ -3,52 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ethical Hacker Pro – Interactive Labs</title>
-  <link rel="stylesheet" href="css/lab-styles.css">
+  <title>Ethical Hacker Pro – Interactive Labs | CNM</title>
   <style>
     :root {
-      --primary: #0f172a;
-      --accent: #3b82f6;
-      --success: #10b981;
-      --bg: #f1f5f9;
-      --card: #ffffff;
+      --cnm-navy: #003A70;
+      --cnm-gold: #F6BE00;
+      --cnm-navy-dark: #00264d;
       --text: #1e293b;
       --muted: #64748b;
+      --bg: #f8fafc;
+      --card: #ffffff;
       --border: #e2e8f0;
     }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       line-height: 1.5;
-      margin: 0;
-      padding: 0;
     }
 
+    /* Header */
     .page-header {
-      background: var(--primary);
+      background: var(--cnm-navy);
       color: white;
-      padding: 2rem 1.5rem;
-      text-align: center;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 6px solid var(--cnm-gold);
     }
 
-    .page-header h1 {
-      margin: 0 0 0.4rem 0;
-      font-size: 1.9rem;
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .logo {
+      height: 56px;
+      width: auto;
+      background: white;
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+
+    .header-text h1 {
+      font-size: 1.5rem;
       font-weight: 700;
+      margin-bottom: 0.15rem;
     }
 
-    .page-header p {
-      margin: 0;
-      opacity: 0.85;
-      font-size: 1.05rem;
+    .header-text p {
+      font-size: 0.95rem;
+      opacity: 0.9;
     }
 
+    /* Main content */
     .container {
       max-width: 1100px;
       margin: 0 auto;
       padding: 2rem 1.25rem 4rem;
+    }
+
+    .intro {
+      background: white;
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--cnm-gold);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
     }
 
     .module-section {
@@ -57,25 +82,25 @@
 
     .module-header {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 0.75rem;
       margin-bottom: 1.25rem;
       padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--border);
+      border-bottom: 2px solid var(--cnm-navy);
     }
 
     .module-header h2 {
+      font-size: 1.35rem;
+      color: var(--cnm-navy);
       margin: 0;
-      font-size: 1.4rem;
-      color: var(--primary);
     }
 
     .module-header .count {
-      background: #e0f2fe;
-      color: #0369a1;
-      font-size: 0.8rem;
+      background: var(--cnm-navy);
+      color: white;
+      font-size: 0.78rem;
       font-weight: 600;
-      padding: 0.2rem 0.6rem;
+      padding: 0.2rem 0.65rem;
       border-radius: 999px;
     }
 
@@ -88,38 +113,37 @@
     .lab-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 1.35rem 1.4rem;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
       display: flex;
       flex-direction: column;
-      height: 100%;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
     .lab-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 10px 25px rgba(0, 58, 112, 0.12);
     }
 
-    .lab-card .lab-number {
+    .lab-number {
       font-size: 0.75rem;
       font-weight: 700;
-      color: var(--accent);
+      color: var(--cnm-navy);
       letter-spacing: 0.03em;
       margin-bottom: 0.35rem;
     }
 
     .lab-card h3 {
+      font-size: 1.12rem;
+      color: var(--cnm-navy);
       margin: 0 0 0.5rem 0;
-      font-size: 1.15rem;
-      color: var(--primary);
       line-height: 1.3;
     }
 
     .lab-card p {
-      margin: 0 0 1.25rem 0;
       font-size: 0.92rem;
       color: var(--muted);
+      margin: 0 0 1.25rem 0;
       flex-grow: 1;
     }
 
@@ -127,7 +151,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      color: var(--accent);
+      color: var(--cnm-navy);
       font-weight: 600;
       font-size: 0.95rem;
       text-decoration: none;
@@ -135,11 +159,12 @@
     }
 
     .lab-card a:hover {
+      color: #00264d;
       text-decoration: underline;
     }
 
     .coming-soon {
-      opacity: 0.65;
+      opacity: 0.7;
     }
 
     .coming-soon .lab-number {
@@ -151,7 +176,7 @@
       pointer-events: none;
     }
 
-    .footer-note {
+    .footer {
       text-align: center;
       margin-top: 3rem;
       padding-top: 1.5rem;
@@ -160,19 +185,38 @@
       font-size: 0.9rem;
     }
 
+    .footer strong {
+      color: var(--cnm-navy);
+    }
+
     @media (max-width: 600px) {
-      .page-header h1 { font-size: 1.55rem; }
+      .header-inner { flex-direction: column; text-align: center; }
+      .header-text h1 { font-size: 1.3rem; }
       .lab-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="page-header">
-    <h1>Ethical Hacker Pro – Interactive Labs</h1>
-    <p>Hands-on practice for Modules 1 & 2 (and beyond)</p>
-  </div>
+
+  <!-- Header with CNM branding -->
+  <header class="page-header">
+    <div class="header-inner">
+      <!-- Place official CNM logo at images/cnm-logo.png -->
+      <img src="images/cnm-logo.png" alt="Central New Mexico Community College" class="logo"
+           onerror="this.style.display='none'">
+      <div class="header-text">
+        <h1>Ethical Hacker Pro – Interactive Labs</h1>
+        <p>Central New Mexico Community College • Hands-on Practice</p>
+      </div>
+    </div>
+  </header>
 
   <div class="container">
+
+    <div class="intro">
+      These interactive labs reinforce the updated Ethical Hacker Pro curriculum used at CNM. 
+      Complete the labs in order for the best learning experience. Each lab provides immediate feedback.
+    </div>
 
     <!-- ========== MODULE 1 ========== -->
     <section class="module-section">
@@ -180,19 +224,17 @@
         <h2>Module 1 – Introduction to Ethical Hacking</h2>
         <span class="count">2 labs</span>
       </div>
-
       <div class="lab-grid">
         <div class="lab-card">
           <div class="lab-number">LAB 1.1</div>
           <h3>Certification Comparison</h3>
-          <p>Compare TestOut Ethical Hacker Pro and EC-Council CEH. Understand the differences in format, focus, and career value.</p>
+          <p>Compare TestOut Ethical Hacker Pro and EC-Council CEH. Understand format, focus, and career value.</p>
           <a href="module1/01-certification-comparison.html">Start Lab →</a>
         </div>
-
         <div class="lab-card">
           <div class="lab-number">LAB 1.2</div>
           <h3>Five-Phase Mapping</h3>
-          <p>Map real-world actions to the classic five phases of ethical hacking and begin connecting them to modern frameworks.</p>
+          <p>Map real-world actions to the classic five phases of ethical hacking.</p>
           <a href="module1/02-five-phase-mapping.html">Start Lab →</a>
         </div>
       </div>
@@ -204,65 +246,133 @@
         <h2>Module 2 – Introduction to Penetration Testing</h2>
         <span class="count">5 labs</span>
       </div>
-
       <div class="lab-grid">
         <div class="lab-card">
           <div class="lab-number">LAB 2.1</div>
           <h3>Framework Matching</h3>
-          <p>Select the most appropriate framework or knowledge base (PTES, OWASP, MITRE ATT&CK, etc.) for different testing situations.</p>
+          <p>Select the most appropriate framework (PTES, OWASP, MITRE ATT&CK, etc.) for different situations.</p>
           <a href="module2/01-framework-matching.html">Start Lab →</a>
         </div>
-
         <div class="lab-card">
           <div class="lab-number">LAB 2.2</div>
           <h3>Test Type Scenario Sorter</h3>
           <p>Classify engagements as black-box, gray-box, or white-box and justify your decisions.</p>
           <a href="module2/02-test-type-sorter.html">Start Lab →</a>
         </div>
-
         <div class="lab-card">
           <div class="lab-number">LAB 2.3</div>
           <h3>Threat Actor Classification</h3>
-          <p>Identify modern threat actors (ransomware groups, APTs, initial access brokers, etc.) and their primary motivations.</p>
+          <p>Identify modern threat actors and their primary motivations.</p>
           <a href="module2/03-threat-actor-classification.html">Start Lab →</a>
         </div>
-
         <div class="lab-card">
           <div class="lab-number">LAB 2.4</div>
           <h3>Scope & Rules of Engagement Builder</h3>
-          <p>Practice proper scoping and identify the essential elements of a professional Rules of Engagement document.</p>
+          <p>Practice proper scoping and identify essential Rules of Engagement elements.</p>
           <a href="module2/04-scope-roe-builder.html">Start Lab →</a>
         </div>
-
         <div class="lab-card">
           <div class="lab-number">LAB 2.5</div>
           <h3>Legal & Ethical Decision Scenarios</h3>
-          <p>Apply professional judgment to realistic legal and ethical situations that arise during engagements.</p>
+          <p>Apply professional judgment to realistic legal and ethical situations.</p>
           <a href="module2/05-legal-ethical-scenarios.html">Start Lab →</a>
         </div>
       </div>
     </section>
 
-    <!-- ========== FUTURE MODULES (Placeholder structure) ========== -->
+    <!-- ========== MODULE 3 ========== -->
+    <section class="module-section">
+      <div class="module-header">
+        <h2>Module 3 – Social Engineering & Physical Security</h2>
+        <span class="count">5 labs</span>
+      </div>
+      <div class="lab-grid">
+        <div class="lab-card">
+          <div class="lab-number">LAB 3.1</div>
+          <h3>Phishing Email Analyzer</h3>
+          <p>Examine realistic emails and identify phishing red flags, including modern techniques.</p>
+          <a href="module3/01-phishing-email-analyzer.html">Start Lab →</a>
+        </div>
+        <div class="lab-card">
+          <div class="lab-number">LAB 3.2</div>
+          <h3>Social Engineering Classification</h3>
+          <p>Match scenarios to the correct social engineering technique.</p>
+          <a href="module3/02-social-engineering-classification.html">Start Lab →</a>
+        </div>
+        <div class="lab-card">
+          <div class="lab-number">LAB 3.3</div>
+          <h3>Vishing & Deepfake Decisions</h3>
+          <p>Practice correct responses to voice and deepfake social engineering attempts.</p>
+          <a href="module3/03-vishing-deepfake-decisions.html">Start Lab →</a>
+        </div>
+        <div class="lab-card">
+          <div class="lab-number">LAB 3.4</div>
+          <h3>Physical Security Risk Assessment</h3>
+          <p>Identify physical security weaknesses and recommend appropriate controls.</p>
+          <a href="module3/04-physical-security-assessment.html">Start Lab →</a>
+        </div>
+        <div class="lab-card">
+          <div class="lab-number">LAB 3.5</div>
+          <h3>Countermeasure Selection</h3>
+          <p>Choose the most effective combination of controls for common social engineering and physical threats.</p>
+          <a href="module3/05-countermeasure-selection.html">Start Lab →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== MODULE 4 ========== -->
+    <section class="module-section">
+      <div class="module-header">
+        <h2>Module 4 – Reconnaissance</h2>
+        <span class="count">4 labs</span>
+      </div>
+      <div class="lab-grid">
+        <div class="lab-card">
+          <div class="lab-number">LAB 4.1</div>
+          <h3>OSINT Investigation Simulator</h3>
+          <p>Walk through a guided passive reconnaissance investigation using simulated OSINT techniques.</p>
+          <a href="module4/01-osint-investigation-simulator.html">Start Lab →</a>
+        </div>
+        <div class="lab-card">
+          <div class="lab-number">LAB 4.2</div>
+          <h3>Passive vs Active Recon</h3>
+          <p>Classify reconnaissance activities as passive or active and understand detection risk.</p>
+          <a href="module4/02-passive-vs-active-recon.html">Start Lab →</a>
+        </div>
+        <div class="lab-card">
+          <div class="lab-number">LAB 4.3</div>
+          <h3>Recon Countermeasure Prioritizer</h3>
+          <p>Prioritize the highest-impact defenses against common reconnaissance exposures.</p>
+          <a href="module4/03-recon-countermeasure-prioritizer.html">Start Lab →</a>
+        </div>
+        <div class="lab-card">
+          <div class="lab-number">LAB 4.4</div>
+          <h3>Scope-Compliant Recon Checker</h3>
+          <p>Make professional decisions that keep reconnaissance activities inside the Rules of Engagement.</p>
+          <a href="module4/04-scope-compliant-recon-checker.html">Start Lab →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Future modules placeholder -->
     <section class="module-section">
       <div class="module-header">
         <h2>Future Modules</h2>
         <span class="count">Coming soon</span>
       </div>
-
       <div class="lab-grid">
         <div class="lab-card coming-soon">
-          <div class="lab-number">MODULE 3+</div>
+          <div class="lab-number">MODULES 5+</div>
           <h3>More labs on the way</h3>
-          <p>Social Engineering, Reconnaissance, Scanning, Enumeration, Vulnerability Analysis, System Hacking, and beyond will be added here as they are developed.</p>
+          <p>Scanning, Enumeration, Vulnerability Analysis, System Hacking, and additional topics will be added here as they are developed.</p>
           <a href="#">Coming Soon</a>
         </div>
       </div>
     </section>
 
-    <div class="footer-note">
-      These interactive labs are designed to reinforce the updated Ethical Hacker Pro curriculum.<br>
-      Built for easy deployment on GitHub Pages.
+    <div class="footer">
+      <strong>Central New Mexico Community College</strong><br>
+      Ethical Hacker Pro Interactive Labs • Updated Curriculum Support Materials
     </div>
 
   </div>
