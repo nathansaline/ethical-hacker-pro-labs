@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Phishing Email Analyzer</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+  <style>
+    .email-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      font-family: ui-monospace, monospace;
+    }
+    .flag-list { margin: 0.75rem 0; padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Phishing Email Analyzer</h1>
+      <div class="subtitle">Module 3 • Social Engineering</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Email <span id="qnum">1</span> of 4</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Email</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const emails = [
+      {
+        subject: "Urgent: Payroll Update Required – Action Needed Today",
+        body: `From: payroll@company-hr-support.com
+To: you@yourcompany.com
+Subject: Urgent: Payroll Update Required – Action Needed Today
+
+Dear Employee,
+
+Our system shows that your direct deposit information must be re-verified before the next pay cycle. 
+Please click the secure link below and confirm your banking details within 24 hours to avoid payment delays.
+
+https://company-hr-support.com/verify-payroll
+
+Thank you,
+Human Resources`,
+        question: "Which of the following are red flags in this email? (Select the best answer)",
+        options: [
+          { text: "Slightly misspelled/look-alike domain and urgent deadline", correct: true },
+          { text: "It came from Human Resources so it must be safe", correct: false },
+          { text: "There are no red flags", correct: false },
+          { text: "Only the link is suspicious", correct: false }
+        ],
+        feedback: "Correct. Look-alike domains combined with urgency are classic phishing indicators. Always verify unexpected requests through a second channel."
+      },
+      {
+        subject: "IT Help Desk – Password Expiration Notice",
+        body: `From: it-helpdesk@yourcompany.com
+Subject: Password Expiration Notice
+
+Your password will expire in 2 hours. 
+Click here to reset it now: http://yourcompany-it-reset.net/login
+
+Failure to reset will result in account lockout.`,
+        question: "What is the biggest problem with this email?",
+        options: [
+          { text: "It uses HTTP instead of HTTPS and a non-corporate domain", correct: true },
+          { text: "It is too polite", correct: false },
+          { text: "It does not mention the company name", correct: false },
+          { text: "There is no problem", correct: false }
+        ],
+        feedback: "Correct. Legitimate IT password resets almost never come from external-looking domains or use plain HTTP."
+      },
+      {
+        subject: "CEO Request – Quick Favor",
+        body: `From: alex.morgan@yourcompany.com
+Subject: Quick Favor
+
+Hi,
+
+I'm in a meeting and need you to purchase three $100 gift cards for a client gift and send me the codes. 
+I'll reimburse you right away. Please handle this confidentially.
+
+Thanks,
+Alex`,
+        question: "This is an example of which modern attack type?",
+        options: [
+          { text: "Business Email Compromise / Executive Impersonation", correct: true },
+          { text: "Normal internal request", correct: false },
+          { text: "Ransomware", correct: false },
+          { text: "SQL Injection", correct: false }
+        ],
+        feedback: "Correct. This is a classic Business Email Compromise (BEC) / gift-card scam pattern. Always verify unusual financial requests via a known phone number or in person."
+      },
+      {
+        subject: "Your Package Could Not Be Delivered",
+        body: `From: tracking@fedex-shipment-alerts.com
+Subject: Your Package Could Not Be Delivered
+
+We attempted delivery but need additional information. 
+Open the attachment for full details.`,
+        question: "What should you do with this email?",
+        options: [
+          { text: "Open the attachment to see which package it is", correct: false },
+          { text: "Delete it or report it; do not open attachments from unexpected delivery messages", correct: true },
+          { text: "Forward it to the whole company", correct: false },
+          { text: "Reply asking for more information", correct: false }
+        ],
+        feedback: "Correct. Unexpected attachments, especially from delivery services, are a common malware delivery method."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const e = emails[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / emails.length) * 100}%`;
+
+      let html = `
+        <div class="email-box"><strong>Subject:</strong> ${e.subject}<br><br>${e.body}</div>
+        <div class="question">${e.question}</div>
+        <div class="options">
+      `;
+      e.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const e = emails[current];
+      e.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (e.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, e.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        e.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, e.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < emails.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / emails.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${emails.length}</strong> (${percent}%)</p>
+        <p>Strong phishing recognition is one of the highest-value skills you can develop.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
