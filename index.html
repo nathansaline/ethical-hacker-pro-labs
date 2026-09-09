@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethical Hacker Pro – Interactive Labs</title>
+  <link rel="stylesheet" href="css/lab-styles.css">
+  <style>
+    :root {
+      --primary: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .page-header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      margin: 0 0 0.4rem 0;
+      font-size: 1.9rem;
+      font-weight: 700;
+    }
+
+    .page-header p {
+      margin: 0;
+      opacity: 0.85;
+      font-size: 1.05rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .module-section {
+      margin-bottom: 3rem;
+    }
+
+    .module-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .module-header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+
+    .module-header .count {
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .lab-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.35rem 1.4rem;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .lab-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+    }
+
+    .lab-card .lab-number {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      margin-bottom: 0.35rem;
+    }
+
+    .lab-card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.15rem;
+      color: var(--primary);
+      line-height: 1.3;
+    }
+
+    .lab-card p {
+      margin: 0 0 1.25rem 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+      flex-grow: 1;
+    }
+
+    .lab-card a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      margin-top: auto;
+    }
+
+    .lab-card a:hover {
+      text-decoration: underline;
+    }
+
+    .coming-soon {
+      opacity: 0.65;
+    }
+
+    .coming-soon .lab-number {
+      color: var(--muted);
+    }
+
+    .coming-soon a {
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.55rem; }
+      .lab-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>Ethical Hacker Pro – Interactive Labs</h1>
+    <p>Hands-on practice for Modules 1 & 2 (and beyond)</p>
+  </div>
+
+  <div class="container">
+
+    <!-- ========== MODULE 1 ========== -->
+    <section class="module-section">
+      <div class="module-header">
+        <h2>Module 1 – Introduction to Ethical Hacking</h2>
+        <span class="count">2 labs</span>
+      </div>
+
+      <div class="lab-grid">
+        <div class="lab-card">
+          <div class="lab-number">LAB 1.1</div>
+          <h3>Certification Comparison</h3>
+          <p>Compare TestOut Ethical Hacker Pro and EC-Council CEH. Understand the differences in format, focus, and career value.</p>
+          <a href="module1/01-certification-comparison.html">Start Lab →</a>
+        </div>
+
+        <div class="lab-card">
+          <div class="lab-number">LAB 1.2</div>
+          <h3>Five-Phase Mapping</h3>
+          <p>Map real-world actions to the classic five phases of ethical hacking and begin connecting them to modern frameworks.</p>
+          <a href="module1/02-five-phase-mapping.html">Start Lab →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== MODULE 2 ========== -->
+    <section class="module-section">
+      <div class="module-header">
+        <h2>Module 2 – Introduction to Penetration Testing</h2>
+        <span class="count">5 labs</span>
+      </div>
+
+      <div class="lab-grid">
+        <div class="lab-card">
+          <div class="lab-number">LAB 2.1</div>
+          <h3>Framework Matching</h3>
+          <p>Select the most appropriate framework or knowledge base (PTES, OWASP, MITRE ATT&CK, etc.) for different testing situations.</p>
+          <a href="module2/01-framework-matching.html">Start Lab →</a>
+        </div>
+
+        <div class="lab-card">
+          <div class="lab-number">LAB 2.2</div>
+          <h3>Test Type Scenario Sorter</h3>
+          <p>Classify engagements as black-box, gray-box, or white-box and justify your decisions.</p>
+          <a href="module2/02-test-type-sorter.html">Start Lab →</a>
+        </div>
+
+        <div class="lab-card">
+          <div class="lab-number">LAB 2.3</div>
+          <h3>Threat Actor Classification</h3>
+          <p>Identify modern threat actors (ransomware groups, APTs, initial access brokers, etc.) and their primary motivations.</p>
+          <a href="module2/03-threat-actor-classification.html">Start Lab →</a>
+        </div>
+
+        <div class="lab-card">
+          <div class="lab-number">LAB 2.4</div>
+          <h3>Scope & Rules of Engagement Builder</h3>
+          <p>Practice proper scoping and identify the essential elements of a professional Rules of Engagement document.</p>
+          <a href="module2/04-scope-roe-builder.html">Start Lab →</a>
+        </div>
+
+        <div class="lab-card">
+          <div class="lab-number">LAB 2.5</div>
+          <h3>Legal & Ethical Decision Scenarios</h3>
+          <p>Apply professional judgment to realistic legal and ethical situations that arise during engagements.</p>
+          <a href="module2/05-legal-ethical-scenarios.html">Start Lab →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FUTURE MODULES (Placeholder structure) ========== -->
+    <section class="module-section">
+      <div class="module-header">
+        <h2>Future Modules</h2>
+        <span class="count">Coming soon</span>
+      </div>
+
+      <div class="lab-grid">
+        <div class="lab-card coming-soon">
+          <div class="lab-number">MODULE 3+</div>
+          <h3>More labs on the way</h3>
+          <p>Social Engineering, Reconnaissance, Scanning, Enumeration, Vulnerability Analysis, System Hacking, and beyond will be added here as they are developed.</p>
+          <a href="#">Coming Soon</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      These interactive labs are designed to reinforce the updated Ethical Hacker Pro curriculum.<br>
+      Built for easy deployment on GitHub Pages.
+    </div>
+
+  </div>
+</body>
+</html>
