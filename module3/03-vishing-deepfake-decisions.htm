@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Vishing & Deepfake Decisions</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Vishing & Deepfake Decision Lab</h1>
+      <div class="subtitle">Module 3 • Social Engineering</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Scenario <span id="qnum">1</span> of 4</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Scenario</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const scenarios = [
+      {
+        text: "You receive a phone call from someone who sounds exactly like your CEO. The caller says they are in a meeting with legal and need you to urgently wire $18,000 to a new vendor. They tell you not to discuss it with anyone else yet.",
+        question: "What is the best immediate action?",
+        options: [
+          { text: "Complete the wire transfer to be helpful", correct: false },
+          { text: "Hang up and verify the request using a known, trusted phone number or in-person contact", correct: true },
+          { text: "Ask the caller for the CEO’s employee ID and then proceed", correct: false },
+          { text: "Send a quick Slack message to the CEO asking if it’s real", correct: false }
+        ],
+        feedback: "Correct. Voice cloning makes caller ID and voice recognition unreliable. Always verify unusual financial requests through a separate, trusted channel."
+      },
+      {
+        text: "An IT support person calls and says they need to push an emergency security update to your computer. They ask you to install remote access software and read them a code that appears on your screen.",
+        question: "What should you do?",
+        options: [
+          { text: "Install the software and provide the code", correct: false },
+          { text: "Refuse, hang up, and contact IT through the official internal channel", correct: true },
+          { text: "Ask them to email you the instructions first", correct: false },
+          { text: "Give them the code but do not install software", correct: false }
+        ],
+        feedback: "Correct. Legitimate IT departments almost never cold-call asking users to install remote access tools or read out codes."
+      },
+      {
+        text: "You are on a video call. The person on screen looks and sounds like your manager and is asking for a list of employees who have access to the financial system. The video quality is slightly off and there is a short lag.",
+        question: "What is the safest response?",
+        options: [
+          { text: "Provide the list because it looks like your manager", correct: false },
+          { text: "End the call and verify the request through a known communication channel", correct: true },
+          { text: "Ask the person to turn the camera off and continue by voice only", correct: false },
+          { text: "Send the list but mark it confidential", correct: false }
+        ],
+        feedback: "Correct. Deepfake video is becoming more convincing. Unusual requests for sensitive information should always be verified out-of-band."
+      },
+      {
+        text: "A caller claims to be from the help desk and says your account has been locked due to suspicious activity. They ask you to confirm your current password so they can unlock it.",
+        question: "How should you respond?",
+        options: [
+          { text: "Provide the password so the account can be unlocked quickly", correct: false },
+          { text: "Do not give the password. Hang up and contact the help desk using the official number or portal", correct: true },
+          { text: "Give them the password but change it immediately afterward", correct: false },
+          { text: "Ask them to prove who they are by telling you your employee ID", correct: false }
+        ],
+        feedback: "Correct. No legitimate support technician will ever ask you to tell them your current password."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const s = scenarios[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / scenarios.length) * 100}%`;
+
+      let html = `<div class="question"><strong>Scenario:</strong><br>${s.text}<br><br>${s.question}</div><div class="options">`;
+      s.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const s = scenarios[current];
+      s.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (s.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, s.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        s.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, s.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function 
