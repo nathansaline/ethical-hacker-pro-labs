@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Legal & Ethical Decision Scenarios</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Legal & Ethical Decision Scenarios</h1>
+      <div class="subtitle">Module 2 • Ethical Hacker Pro</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Scenario <span id="qnum">1</span> of 4</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Scenario</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "During an external penetration test you discover an unlisted server that appears to belong to a partner organization and contains what looks like patient data. It was never mentioned in the scope document. What is the correct action?",
+        options: [
+          { text: "Continue testing it since it is reachable from the in-scope network", correct: false },
+          { text: "Stop testing the system immediately and notify the client according to the Rules of Engagement", correct: true },
+          { text: "Fully exploit it so you can include a high-severity finding in the report", correct: false },
+          { text: "Ignore it completely and only report originally listed systems", correct: false }
+        ],
+        feedback: "Correct. Out-of-scope systems and unexpected sensitive data require immediate communication. Continuing testing can create serious legal liability."
+      },
+      {
+        question: "The client asks you late on Friday to “just quickly check” an additional cloud environment that was not in the original scope. They say they will update the paperwork next week. What should you do?",
+        options: [
+          { text: "Begin testing immediately to be helpful and responsive", correct: false },
+          { text: "Decline until the scope and Rules of Engagement are formally updated and signed", correct: true },
+          { text: "Test it but do not include any findings in the final report", correct: false },
+          { text: "Get verbal approval on a phone call and proceed", correct: false }
+        ],
+        feedback: "Correct. Scope changes must be documented and authorized in writing. Informal or verbal expansion of scope creates significant risk for both the tester and the client."
+      },
+      {
+        question: "You identify a critical vulnerability that allows full domain compromise. The Rules of Engagement state that critical findings must be reported within four hours. What is the proper action?",
+        options: [
+          { text: "Wait until the final report to avoid interrupting the client", correct: false },
+          { text: "Follow the RoE notification process and report it immediately through the agreed channel", correct: true },
+          { text: "Post the finding publicly so the client is forced to act quickly", correct: false },
+          { text: "Only tell the technical contact and ask them to keep it quiet", correct: false }
+        ],
+        feedback: "Correct. Always follow the communication procedures defined in the Rules of Engagement. Timely notification of critical findings is both a professional and contractual obligation."
+      },
+      {
+        question: "While reviewing traffic you accidentally capture a small amount of personal employee data that was not expected. The RoE requires protection of personal data. What should you do?",
+        options: [
+          { text: "Delete it quietly and do not mention it", correct: false },
+          { text: "Include the full data in the report for completeness", correct: false },
+          { text: "Securely handle the data according to the RoE, minimize retention, and notify the client as required", correct: true },
+          { text: "Send the data to the client’s HR department directly", correct: false }
+        ],
+        feedback: "Correct. Personal data must be handled according to the agreed rules and applicable privacy requirements. Minimize retention and follow the notification process."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const q = questions[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / questions.length) * 100}%`;
+
+      let html = `<div class="question">${q.question}</div><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const q = questions[current];
+      q.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+
+      const btn = document.getElementById(`opt${index}`);
+      if (q.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, q.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        q.options.forEach((opt, i) => {
+          if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct');
+        });
+        showFeedback(false, q.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        finishLab();
+      }
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / questions.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${questions.length}</strong> (${percent}%)</p>
+        <p>Professional ethics and strict adherence to scope and Rules of Engagement are non-negotiable in ethical hacking.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
