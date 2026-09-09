@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Scope-Compliant Recon Checker</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Scope-Compliant Recon Checker</h1>
+      <div class="subtitle">Module 4 • Rules of Engagement</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Decision <span id="qnum">1</span> of 5</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Decision</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const decisions = [
+      {
+        text: "The Rules of Engagement clearly authorize passive OSINT and limited port scanning of the external IP range 203.0.113.0/24. You discover a promising subdomain that resolves to an IP outside that range.",
+        question: "What should you do?",
+        options: [
+          { text: "Scan it anyway because it belongs to the same organization", correct: false },
+          { text: "Stop and check with the client / follow the RoE process before touching any system outside the stated scope", correct: true },
+          { text: "Only run passive tools against it", correct: false },
+          { text: "Add it to the report as out-of-scope and continue scanning inside the range", correct: false }
+        ],
+        feedback: "Correct. Never expand scope on your own. Always follow the Rules of Engagement escalation process."
+      },
+      {
+        text: "You want to run a full vulnerability scan (including safe exploit checks) against the external web servers.",
+        question: "When is this allowed?",
+        options: [
+          { text: "Only if the RoE explicitly authorizes vulnerability scanning / safe checks on those systems", correct: true },
+          { text: "Always, because it is part of reconnaissance", correct: false },
+          { text: "Only after 5 p.m.", correct: false },
+          { text: "As long as you use a popular tool", correct: false }
+        ],
+        feedback: "Correct. The type and aggressiveness of scanning must be explicitly authorized."
+      },
+      {
+        text: "During passive OSINT you find an employee’s personal GitHub account that contains what appears to be company source code.",
+        question: "What is the correct professional action?",
+        options: [
+          { text: "Download everything and begin analyzing the code for vulnerabilities", correct: false },
+          { text: "Note the finding, do not download or use the code further, and report it according to the RoE / engagement rules", correct: true },
+          { text: "Ignore it completely", correct: false },
+          { text: "Contact the employee directly", correct: false }
+        ],
+        feedback: "Correct. Unexpected sensitive data must be handled carefully and reported through proper channels."
+      },
+      {
+        text: "The RoE states that testing may only occur Monday–Friday, 08:00–18:00 local time. You are free on Saturday morning and want to finish scanning.",
+        question: "What should you do?",
+        options: [
+          { text: "Scan on Saturday because no one will notice", correct: false },
+          { text: "Respect the authorized testing window and wait until Monday", correct: true },
+          { text: "Scan only the least critical systems", correct: false },
+          { text: "Ask a friend to run the scans for you", correct: false }
+        ],
+        feedback: "Correct. Authorized testing windows exist for a reason (operational impact and detection agreements)."
+      },
+      {
+        text: "You have completed all authorized passive and active reconnaissance within scope.",
+        question: "What is the most professional next step?",
+        options: [
+          { text: "Document all findings clearly and prepare to move into the next authorized phase of the engagement", correct: true },
+          { text: "Immediately begin exploitation without further communication", correct: false },
+          { text: "Delete your notes for operational security", correct: false },
+          { text: "Post a summary on social media", correct: false }
+        ],
+        feedback: "Correct. Good documentation and disciplined progression through the authorized phases are hallmarks of professional work."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const d = decisions[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / decisions.length) * 100}%`;
+
+      let html = `<div class="question"><strong>Situation:</strong><br>${d.text}<br><br>${d.question}</div><div class="options">`;
+      d.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const d = decisions[current];
+      d.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (d.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, d.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        d.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, d.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < decisions.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / decisions.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${decisions.length}</strong> (${percent}%)</p>
+        <p>Staying strictly within the Rules of Engagement is one of the most important professional habits an ethical hacker can develop.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
