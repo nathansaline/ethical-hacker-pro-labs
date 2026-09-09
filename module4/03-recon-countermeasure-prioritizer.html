@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Recon Countermeasure Prioritizer</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Reconnaissance Countermeasure Prioritizer</h1>
+      <div class="subtitle">Module 4</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Exposure <span id="qnum">1</span> of 4</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Exposure</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const exposures = [
+      {
+        text: "The company has many subdomains (dev, staging, test, old VPN portals) that are publicly discoverable and some are still reachable.",
+        question: "What is the highest-impact first action?",
+        options: [
+          { text: "Perform a full asset inventory and remove or properly restrict unused/old internet-facing systems", correct: true },
+          { text: "Change the company logo on the website", correct: false },
+          { text: "Block all search engine indexing", correct: false },
+          { text: "Ignore them because they are only development systems", correct: false }
+        ],
+        feedback: "Correct. Reducing the number of exposed systems is one of the highest-value countermeasures against reconnaissance."
+      },
+      {
+        text: "Email security records (SPF, DKIM, DMARC) are missing or poorly configured, making domain spoofing easy.",
+        question: "What should be prioritized?",
+        options: [
+          { text: "Implement and enforce SPF, DKIM, and a strict DMARC policy", correct: true },
+          { text: "Only rely on end-user phishing training", correct: false },
+          { text: "Disable external email entirely", correct: false },
+          { text: "Change the domain name", correct: false }
+        ],
+        feedback: "Correct. Strong email authentication records significantly reduce the success of domain-spoofing phishing attacks."
+      },
+      {
+        text: "Job postings and the company website reveal detailed technology stacks, internal tool names, and specific software versions.",
+        question: "What is a reasonable countermeasure?",
+        options: [
+          { text: "Review public-facing content and reduce unnecessarily specific technical details where possible", correct: true },
+          { text: "Remove all job postings", correct: false },
+          { text: "Stop using modern technology", correct: false },
+          { text: "No action is needed because the information is already public", correct: false }
+        ],
+        feedback: "Correct. Minimizing sensitive technical details in public content raises the cost of reconnaissance."
+      },
+      {
+        text: "Certificate Transparency logs show unexpected certificates being issued for company domains.",
+        question: "What is the best ongoing control?",
+        options: [
+          { text: "Monitor Certificate Transparency logs and investigate unexpected certificate issuance", correct: true },
+          { text: "Stop using HTTPS", correct: false },
+          { text: "Ignore CT logs because certificates are public anyway", correct: false },
+          { text: "Only check logs once per year", correct: false }
+        ],
+        feedback: "Correct. Continuous monitoring of Certificate Transparency logs can provide early warning of malicious or unauthorized certificate issuance."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const e = exposures[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / exposures.length) * 100}%`;
+
+      let html = `<div class="question"><strong>Public Exposure:</strong><br>${e.text}<br><br>${e.question}</div><div class="options">`;
+      e.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const e = exposures[current];
+      e.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (e.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, e.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        e.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, e.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < exposures.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / exposures.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${exposures.length}</strong> (${percent}%)</p>
+        <p>Reducing the external attack surface is one of the most effective ways to limit reconnaissance.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
