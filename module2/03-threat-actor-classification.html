@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Threat Actor Classification</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Threat Actor Classification</h1>
+      <div class="subtitle">Module 2 • Ethical Hacker Pro</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Question <span id="qnum">1</span> of 5</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Question</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "A group encrypts a hospital’s patient records and threatens to publish the data unless a Bitcoin ransom is paid. They operate using an affiliate model.",
+        options: [
+          { text: "Script Kiddie", correct: false },
+          { text: "Hacktivist", correct: false },
+          { text: "Ransomware Operator / RaaS Group", correct: true },
+          { text: "State-sponsored APT", correct: false }
+        ],
+        feedback: "Correct. This matches modern Ransomware-as-a-Service (RaaS) operations that combine encryption with data theft (double extortion)."
+      },
+      {
+        question: "An individual uses publicly available tools and scripts found on the internet to deface a company’s website after a controversial policy announcement.",
+        options: [
+          { text: "State-sponsored APT", correct: false },
+          { text: "Script Kiddie or low-skilled Hacktivist", correct: true },
+          { text: "Initial Access Broker", correct: false },
+          { text: "White Hat", correct: false }
+        ],
+        feedback: "Correct. Limited technical skill combined with ideological motivation is typical of script kiddies or low-skilled hacktivists."
+      },
+      {
+        question: "A highly resourced team maintains quiet access to a network for 14 months, focusing on research data and executive email. They show strong operational security.",
+        options: [
+          { text: "Ransomware Operator", correct: false },
+          { text: "Script Kiddie", correct: false },
+          { text: "State-sponsored / APT", correct: true },
+          { text: "Gray Hat", correct: false }
+        ],
+        feedback: "Correct. Long-term stealthy access focused on intelligence collection is a classic characteristic of Advanced Persistent Threats (APTs), often nation-state affiliated."
+      },
+      {
+        question: "A skilled individual discovers a serious vulnerability in a public-facing application, exploits it without permission, and then notifies the company (sometimes asking for a bug bounty).",
+        options: [
+          { text: "Black Hat", correct: false },
+          { text: "White Hat", correct: false },
+          { text: "Gray Hat", correct: true },
+          { text: "Hacktivist", correct: false }
+        ],
+        feedback: "Correct. Gray-hat actors often cross legal or ethical lines but typically claim good intentions and avoid causing intentional damage."
+      },
+      {
+        question: "A specialist gains initial access to corporate networks and then sells that access to other criminal groups on underground markets.",
+        options: [
+          { text: "Initial Access Broker", correct: true },
+          { text: "Script Kiddie", correct: false },
+          { text: "White Hat", correct: false },
+          { text: "Hacktivist", correct: false }
+        ],
+        feedback: "Correct. Initial Access Brokers specialize in obtaining and selling access, enabling other criminal groups to conduct further attacks."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const q = questions[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / questions.length) * 100}%`;
+
+      let html = `<div class="question">${q.question}</div><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const q = questions[current];
+      q.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+
+      const btn = document.getElementById(`opt${index}`);
+      if (q.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, q.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        q.options.forEach((opt, i) => {
+          if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct');
+        });
+        showFeedback(false, q.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        finishLab();
+      }
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / questions.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${questions.length}</strong> (${percent}%)</p>
+        <p>Accurate threat actor classification is a core skill in threat modeling and helps organizations prioritize defenses.</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
