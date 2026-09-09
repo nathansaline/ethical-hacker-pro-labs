@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Countermeasure Selection</title>
+  <link rel="stylesheet" href="../css/lab-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Countermeasure Selection</h1>
+      <div class="subtitle">Module 3 • Prevention</div>
+    </header>
+
+    <div class="card">
+      <div class="progress">Threat <span id="qnum">1</span> of 4</div>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <div id="questionArea"></div>
+      <div id="feedback" class="feedback"></div>
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next Threat</button>
+      <div id="finalScore" class="hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const threats = [
+      {
+        text: "Employees are frequently targeted by convincing phishing and spear-phishing emails.",
+        question: "Which combination of controls is most effective?",
+        options: [
+          { text: "Phishing-resistant MFA + continuous realistic awareness training + strong email security (SPF/DKIM/DMARC)", correct: true },
+          { text: "Annual security awareness video only", correct: false },
+          { text: "Antivirus software alone", correct: false },
+          { text: "Blocking all external email", correct: false }
+        ],
+        feedback: "Correct. Layered controls that address both technology and human factors provide the best protection."
+      },
+      {
+        text: "The organization is worried about voice cloning and deepfake video being used against finance staff.",
+        question: "What is the strongest procedural control?",
+        options: [
+          { text: "Require out-of-band verification (known phone number or in-person) for any unusual financial or access request", correct: true },
+          { text: "Tell staff to trust video calls from internal numbers", correct: false },
+          { text: "Disable all video conferencing", correct: false },
+          { text: "Rely only on caller ID", correct: false }
+        ],
+        feedback: "Correct. Out-of-band verification defeats both traditional vishing and modern deepfakes."
+      },
+      {
+        text: "Tailgating is common at the main entrance.",
+        question: "Which approach is most effective?",
+        options: [
+          { text: "Clear policy + employee enforcement culture + physical anti-tailgating controls where feasible", correct: true },
+          { text: "Put up a “No Tailgating” sign only", correct: false },
+          { text: "Remove all access control and rely on cameras", correct: false },
+          { text: "Allow tailgating for known employees", correct: false }
+        ],
+        feedback: "Correct. Policy, culture, and technology reinforce one another."
+      },
+      {
+        text: "Sensitive printed documents are often found in regular trash and recycling bins.",
+        question: "What is the appropriate control?",
+        options: [
+          { text: "Mandatory cross-cut shredding or locked confidential destruction bins", correct: true },
+          { text: "Ask employees to tear papers in half", correct: false },
+          { text: "Move the bins farther from desks", correct: false },
+          { text: "No control is needed if the building is secure", correct: false }
+        ],
+        feedback: "Correct. Secure destruction of physical media is a basic but essential control."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const t = threats[current];
+      document.getElementById('qnum').textContent = current + 1;
+      document.getElementById('scoreFill').style.width = `${(current / threats.length) * 100}%`;
+
+      let html = `<div class="question"><strong>Threat:</strong><br>${t.text}<br><br>${t.question}</div><div class="options">`;
+      t.options.forEach((opt, i) => {
+        html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${opt.text}</button>`;
+      });
+      html += `</div>`;
+      document.getElementById('questionArea').innerHTML = html;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      const t = threats[current];
+      t.options.forEach((_, i) => document.getElementById(`opt${i}`).disabled = true);
+      const btn = document.getElementById(`opt${index}`);
+      if (t.options[index].correct) {
+        btn.classList.add('correct');
+        score++;
+        showFeedback(true, t.feedback);
+      } else {
+        btn.classList.add('incorrect');
+        t.options.forEach((opt, i) => { if (opt.correct) document.getElementById(`opt${i}`).classList.add('correct'); });
+        showFeedback(false, t.feedback);
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(isCorrect, text) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = text;
+      fb.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < threats.length) renderQuestion();
+      else finishLab();
+    }
+
+    function finishLab() {
+      document.getElementById('questionArea').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('scoreFill').style.width = '100%';
+      const percent = Math.round((score / threats.length) * 100);
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').innerHTML = `
+        <h2>Lab Complete</h2>
+        <p>You scored <strong>${score} out of ${threats.length}</strong> (${percent}%)</p>
+        <button class="btn" onclick="location.reload()">Retry Lab</button>
+      `;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
